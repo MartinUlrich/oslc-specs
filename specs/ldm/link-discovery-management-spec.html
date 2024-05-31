@@ -445,8 +445,7 @@ services interface for discovering incoming links."
       <section id="resourceOps">
         <h2>Resource Operations</h2>
         <p>
-          LDM does not feature any resource operations other than retrieving a service provider catalog. LDM services
-          return results in LDP containers [[!LDP]].
+          LDM does not feature any resource operations other than retrieving a service provider catalog.
         </p>
       </section>
 
@@ -476,7 +475,7 @@ oslc:statusCode    ::= 400 (Bad Request)
               <dd>The LDM-Server MAY limit the amount of Object resources to be requested.</dd>
               <pre>
 dcterms:identifier ::= “LimitReached”
-oslc:message       ::= “Too many Object resources requested. Limit = $1” $1 = Maximum amount of Object concept resources
+oslc:message       ::= “Too many Object resources requested. Limit = ” Max_amount_of_Object_concept_resources
 oslc:statusCode    ::= 400 (Bad Request)
               </pre>
             </li>
@@ -504,94 +503,92 @@ oslc:statusCode    ::= 400 (Bad Request)
 
     <section id="description">
       <h2>LDM Service Description</h2>
-      <h3>Discover links inquiry</h3>
-      <p>
-        LDM clients inquire for incoming links related to a set of target object resources, typically owned and/or
-        visualized by the client. The discover links inquiry is exposed under the discover-links path as described in
-        the open-API section below For the incoming links inquiry, the client provides:
-      </p>
-      <ul>
-        <li>
-          Configuration Context [0..1]: URI
-        </li>
-        <li>
-          Object resource [0..*]: URI
-        </li>
-        <li>
-          Incoming link predicates [0..*]: URI
-        </li>
-      </ul>
-      <p class="conformance">
-        In case the Configuration Context is specified, any object- or subject-resource shall be specified based on
-        concept resources. The server MUST respond with a set of triples for the incoming links, which are valid for the
-        given Configuration Context. In case the Configuration Context is not specified, any object- or subject-resource
-        shall be specified based on unversioned resources. the server MUST respond with a set of triples for the
-        incoming links, which are not bound to a Configuration Context. Rationale: to support bidirectionality for
-        non-configuration aware links In case no predicates are provided, the server MUST provide all incoming links
-        irrespective of their predicate.
-      </p>
-      <p>
-        The LDM Server response is a set of triples consisting of
-      </p>
-      <ul>
-        <li>
-          Subject resource: URI
-        </li>
-        <li>
-          Predicate: URI
-          <p>
-            should be one of the requested predicates, in case specified
-          </p>
-        </li>
-        <li>
-          Object resource: URI
-          <p>
-            should be one of requested Object concept resources
-          </p>
-        </li>
-      </ul>
-      <p class="conformance">
-        Based on the LDM service response, the LDM client would typically show the incoming link with an inverse
-        predicate label (e.g., “validated by” vs. “validates”). The inquiry MUST be implemented as an HTTP post request,
-        where the target concept resources and the predicates are provided with the request body.
-      </p>
-      <p>
-        The following LDM example illustrates an OSLC RM client that inquires incoming links to requirements req1 and
-        req2 in configuration baseline1 with predicates oslc_cm:tracks and oslc_cm:implements
-      </p>
-      <pre class="example">
+      <section>
+        <h2>Discover links inquiry</h2>
+        <p>
+          LDM clients inquire for incoming links related to a set of target object resources, typically owned and/or
+          visualized by the client. The discover links inquiry is exposed under the discover-links path as described in
+          the open-API section below. For the incoming links inquiry, the client provides:
+        </p>
+        <pre>
+   Configuration-Context [0..1]: URI
+   ObjectResources [1..*]: URI
+   IncomingLinkPredicates [0..*]: URI
+        </pre>
+        <p class="conformance">
+          In case the Configuration Context is specified, any object- or subject-resource SHALL be specified based on
+          concept resources. The server MUST respond with a set of triples for the incoming links, which are valid for the
+          given Configuration Context. 
+        </p>  
+        <p class="conformance">  
+          In case the Configuration Context is not specified, any object- or subject-resource
+          SHALL be specified based on unversioned resources. the server MUST respond with a set of triples for the
+          incoming links, which are not bound to a Configuration Context.
+          (Rationale: to support bidirectionality for non-configuration aware links)
+        </p>
+        <p class="conformance">
+          In case no predicates are provided, the server MUST provide all incoming links
+          irrespective of their predicate.
+        </p>
+        <div class="conformance">
+          <p>The LDM Server response is a set of triples consisting of</p>
+          <ul>
+            <li>Subject resource: URI<p></p></li>
+            <li>Predicate: URI
+              <dd>should be one of the requested predicates, in case specified</dd>
+            </li>
+            <li>Object resource: URI
+              <dd>should be one of requested Object concept resources</dd>
+            </li>
+          </ul>
+        </div>
+        <p>
+          Based on the LDM service response, the LDM client would typically show the incoming link with an inverse
+          predicate label (e.g., “validated by” vs. “validates”). 
+        </p>
+        <p class="conformance">
+          The inquiry MUST be implemented as an HTTP post request,
+          where the target concept resources and the predicates are provided with the request body.
+        </p>
+        <p>
+          The following LDM example illustrates an OSLC RM client that inquires incoming links to requirements req1 and
+          req2 in configuration baseline1 with predicates oslc_cm:tracks and oslc_cm:implements
+        </p>
+        <pre class="example">
   POST http://ldm.example.com:8080/
   Content-Type: application/x-www-form-urlencoded
   Configuration-Context: http://elm.example.com/gcm/baseline1URI
-  objectConceptResources=http://elm.example.com/rm/req1URI,http://elm.example.com/rm/req2URI
-  predicateFilters=http:// elm.example.com/implementsURI, http://elm.example.com/tracksURI
-  </pre
-      >
-      <p>
-        Response (in turtle):
-      </p>
-      <pre class="example">
+        
+  objectResources=http://elm.example.com/rm/req1URI,http://elm.example.com/rm/req2URI &
+  IncomingLinkPredicates=http://elm.example.com/implementsURI,http://elm.example.com/tracksURI
+        </pre>
+        <p>
+          Response (in turtle):
+        </p>
+        <pre class="example">
   HTTP/1.1 200 OK
   Content-Type: application/turtle
   
-  <https://example.com/cm/resource/workitem1URI> 
-    oslc_cm:implements http://elm.example.com/rm/req1URI 
-    oslc_cm:tracks http://elm.example.com/rm/req1URI.
-  <https://example.com/cm/resource/workitem2URI> 
-    oslc_cm:tracks http://elm.example.com/rm/req2URI.
-  
-  </pre
-      >
+  &lt;https://example.com/cm/resource/workitem1URI&gt 
+    oslc_cm:implements &lt;http://elm.example.com/rm/req1URI&gt; ; 
+    oslc_cm:tracks &lt;http://elm.example.com/rm/req1URI&gt; .
+  &lt;https://example.com/cm/resource/workitem2URI&gt; 
+    oslc_cm:tracks &lt;http://elm.example.com/rm/req2URI&gt; .
+        </pre>
+      </section>
 
-      <h3>LDM contributions discovery</h3>
-      <p>
-        A LDM Service provides discovery of its link contributors via Service Provider Catalog which is pointing via
-        oslc:serviceProviderCatalog to the contributing servers catalogs.
-      </p>
-      <p>
-        The link contributions discovery is exposed under the root-services path as described in the open-API section
-        below.
-      </p>
+      <section>
+        <h2>LDM contributions discovery</h2>
+        <p>
+          A LDM Service provides discovery of its link contributors via Service Provider Catalog which is pointing via
+          oslc:serviceProviderCatalog to the contributing servers catalogs.
+        </p>
+        <p>
+          The link contributions discovery is exposed under the root-services path as described in the open-API section
+          below.
+        </p>
+      </section>
+        
       <section id="openapispec">
         <h2>OpenApi specification of the LDM service</h2>
         <p class="conformance">
@@ -603,11 +600,14 @@ oslc:statusCode    ::= 400 (Bad Request)
 
     <section id="conformance">
       <h2>Conformance</h2>
-      <p class="conformance">
-        This specification is based on [[!OSLCCore3]]. OSLC Link Discovery Management servers MUST be compliant with the
-        Core specification, MUST follow all the mandatory requirements in the normative sections of each part of this
-        specification, and SHOULD follow all the guidelines and recommendations in both these specifications.
-      </p>
+      <p>Implementations of this specification need to satisfy the following conformance clauses.</p>
+      
+      // Ulrich: commented as redundant to LDM-1
+      // <p class="conformance">
+      //   This specification is based on [[!OSLCCore3]]. OSLC Link Discovery Management servers MUST be compliant with the
+      //   Core specification, MUST follow all the mandatory requirements in the normative sections of each part of this
+      //   specification, and SHOULD follow all the guidelines and recommendations in both these specifications.
+      // </p>
     </section>
 
     <section class="appendix informative" id="acknowledgments">
@@ -617,7 +617,11 @@ oslc:statusCode    ::= 400 (Bad Request)
         acknowledged:
       </p>
       <p><b>Participants</b>:</p>
-      <p style="margin-left: 40px;">James Amsden, IBM (co-chair)<br /></p>
+      <p style="margin-left: 40px;">
+        James Amsden, IBM (co-chair)<br />
+        David Honey, IBM<br />
+        Ian Green, IBM<br />
+      </p>
     </section>
   </body>
 </html>
