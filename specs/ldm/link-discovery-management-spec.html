@@ -16,7 +16,7 @@ services interface for discovering incoming links."
     ></script>
     <script class="remove">
       var status = "PSD";
-      var revision = 1;
+      var revision = 2;
 
       var wdBase = "https://oslc-op.github.io/oslc-specs/specs/ldm/";
       var oasisBase = "https://docs.oasis-open-projects.org/oslc-op/ldm/v1.0/";
@@ -43,9 +43,9 @@ services interface for discovering incoming links."
           },
         ],
 
-        publishDate: "2023-12-21T12:00Z",
-        //previousPublishDate: "2021-09-30",
-        //previousMaturity: "PS",
+        publishDate: "2024-05-31T12:00Z",
+        previousPublishDate: "2023-12-21",
+        previousMaturity: "PSD",
 
         thisVersion: thisBase + "link-discovery-management-spec.html",
         prevVersion: "",
@@ -79,9 +79,9 @@ services interface for discovering incoming links."
         editors: [
           {
             name: "Eran Gery",
-            mailto: "eran.gery@il.ibm.com",
-            company: "IBM",
-            companyURL: "http://www.ibm.com",
+            mailto: "egery@sodiuswillert.com",
+            company: "Sodius Willert",
+            companyURL: "http://www.sodiuswillert.com",
           },
           {
             name: "Martin Ulrich",
@@ -110,7 +110,7 @@ services interface for discovering incoming links."
         wgShortName: "oslc-op",
 
         // Namespaces defined by this TC
-        namespaces: [{ href: "http://open-services.net/ns/core/am#", prefix: "oslc_am" }],
+        // namespaces: [{ href: "http://open-services.net/ns/core/am#", prefix: "oslc_am" }],
 
         localBiblio: {
           OSLCAM2: {
@@ -253,10 +253,8 @@ services interface for discovering incoming links."
   <body>
     <section id="abstract">
       <p>
-        OSLC Link Discovery Management service defines an OSLC RESTful web services API for the discovering incoming
-        links to a set of possibly versioned resources. To support these scenarios, this specification defines a set of
-        HTTP-based RESTful interfaces in terms of HTTP methods: GET, POST, PUT and DELETE, as well as HTTP response
-        codes, content type handling and resource formats.
+        OSLC Link Discovery Management service defines an OSLC RESTful web services API for the discovering of incoming
+        links to a set of possibly versioned resources.
       </p>
     </section>
 
@@ -274,8 +272,8 @@ services interface for discovering incoming links."
       </p>
       <p>
         With the introduction of OSLC Configuration Management, the simple technique of storing redundant backlinks
-        becomes problematic for maintaining data consistency is not recommended. OSLC Link Guidance recommends storing
-        the link on only one side and using some mechanism to query incoming links from the other direction. One
+        becomes problematic for maintaining data consistency and therefore is not recommended. OSLC Link Guidance recommends
+        storing the link on only one side and using some mechanism to query incoming links from the other direction. One
         approach in common practice is to use OSLC query where a client queries each of its related servers for incoming
         links. While this peer-to-peer query addresses the fundamental issues of getting incoming links without storing
         redundant backlinks, it does not scale or perform well in situations with more than a small number of related
@@ -289,20 +287,20 @@ services interface for discovering incoming links."
         lifecycle activities, such as understanding coverage and/or impact of a set of requirements.
       </p>
       <p>
-        OSLC link Discovery Management is an OSLC specification defines a standard means for client applications to
+        OSLC Link Discovery Management is an OSLC specification which defines standard means for client applications to
         discover incoming links to resources. This specification follows existing practices for incoming links discovery
         and specifies the following services:
       </p>
       <ul>
         <li>
-          How to inquire incoming links to versioned resources for a provided set of (displayed) concept resource URIs
+          How to inquire incoming links to resources for a provided set of (displayed) resource URIs
           and a given configuration context
         </li>
         <li>
-          Incoming links service providers operate in configuration enabled contexts. Therefore, the incoming link
-          inquiries shall specify configuration contexts for the links
+          Incoming links service providers may operate in configuration enabled contexts. Therefore, the incoming link
+          inquiries shall specify configuration contexts for the links in this case
         </li>
-        <li>A means of discovering service providers that contribute links to an LDM server.</li>
+        <li>A means of discovering service providers that contribute links to an LDM server</li>
       </ul>
       <p>
         The specification does not specify how link discovery services ingest data from the various lifecycle providers,
@@ -316,7 +314,7 @@ services interface for discovering incoming links."
 
       <section id="terminology">
         <h3>Terminology</h3>
-        <dl class="spaced">
+        <dl class="glossary">
           <dt><dfn>Link</dfn></dt>
           <dd>
             An assertion or RDF triple consisting of a (subject, predicate, object) that manifests an instance of a
@@ -349,7 +347,7 @@ services interface for discovering incoming links."
           <dd>
             The state (including the properties) of a concept resource can vary over time, or for other reasons. A
             versioned resource is a concept resource that keeps track of different states. A version resource is a
-            resource that represents one specific state of a versioned resource. Not every past state is necessarily
+            resource that represents one specific state of a concept resource. Not every past state is necessarily
             kept; a server may elide or discard states that are no longer referenced. As defined in
             [OSLC-Config-1.0-Part1]
           </dd>
@@ -362,14 +360,14 @@ services interface for discovering incoming links."
       <h2>Base Requirements</h2>
 
       <p>
-        The following sub-sections define the mandatory and optional requirements for an OSLC Architecture Management
-        (OSLC AM) server.
+        The following sub-sections define the mandatory and optional requirements for a Link Discovery Management
+        (OSLC LDM) server.
       </p>
 
       <section id="baseCompliance">
         <h2>Base Compliance</h2>
         <p class="conformance">
-          This specification is based on [[!OSLCCore3]]. OSLC LDM servers MUST be compliant with both the core
+          This specification is based on [[!OSLCCore3]]. OSLC LDM servers MUST be compliant with the core
           specification, MUST follow all the mandatory requirements in the normative sections of this specification, and
           SHOULD follow all the guidelines and recommendations in both these specifications.
         </p>
@@ -410,12 +408,17 @@ services interface for discovering incoming links."
             </tr>
             <tr>
               <td>Discovery</td>
-              <td class="conformance">
-                LDM Service URI is configured explicitly in each LDM client. Therefore no dedicated discovery protocol
-                is needed. Note: a scenario with multiple LDM Servers is possible, in which case multiple LDM Service
-                URI are configured. This specification does not prescribe how these multiple LDM servers are managed
-                together. A LDM Service SHOULD provide discovery of its link contributors via Service Provider Catalog
-                which is pointing via oslc:serviceProviderCatalog to the contributing servers catalogs.
+              <td>
+                <p>
+                  LDM Service URI is configured explicitly in each LDM client. Therefore no dedicated discovery protocol
+                  is needed. Note: a scenario with multiple LDM Servers is possible, in which case multiple LDM Service
+                  URI are configured. This specification does not prescribe how these multiple LDM servers are managed
+                  together.
+                </p>
+                </p class="conformance">
+                  A LDM Service SHOULD provide discovery of its link contributors via Service Provider Catalog
+                  which is pointing via oslc:serviceProviderCatalog to the contributing servers catalogs.
+                </p>
               </td>
             </tr>
             <tr>
@@ -430,19 +433,6 @@ services interface for discovering incoming links."
                 LDM Servers SHOULD provide error responses using OSLC Core defined error formats
               </td>
             </tr>
-            <tr>
-              <td>RDF/XML Representations</td>
-              <td class="conformance">
-                LDM Servers MUST support RDF/XML and SHOULD support Turtle representations for OSLC Defined Resources
-              </td>
-            </tr>
-            <tr>
-              <td>JSON+LD Representations</td>
-              <td class="conformance">
-                LDM Servers MAY support JSON+LD representations; those which do MUST conform to the OSLC Core Guidelines
-                for JSON+LD
-              </td>
-            </tr>
           </tbody>
         </table>
       </section>
@@ -454,10 +444,9 @@ services interface for discovering incoming links."
 
       <section id="resourceOps">
         <h2>Resource Operations</h2>
-
         <p>
           LDM does not feature any resource operations other than retrieving a service provider catalog. LDM services
-          return results in LDP containers.
+          return results in LDP containers [[!LDP]].
         </p>
       </section>
 
@@ -470,42 +459,39 @@ services interface for discovering incoming links."
       <section id="errors">
         <h2>Error Responses</h2>
 
-        <p class="conformance">
-          The following error situations MUST be handled by the LDM-Server. In case the error occurs, the subsequent
-          oslc:error SHALL be returned.
-        </p>
-        <ul>
-          <li>
-            No Object resource provided
-            <p>
-              dcterms:identifier = “MissingObject” oslc:message = “No Object resource provided”
-            </p>
-            <p>
-              oslc:statusCode = 400 (Bad Request)
-            </p>
-          </li>
-          <li class="conformance">
-            Too many Object resources requested The LDM-Server MAY limit the amount of Object resources to be requested.
-            <p>
-              dcterms:identifier = “LimitReached” oslc:message = “Too many Object resources requested. Limit = $1” $1 =
-              Maximum amount of Object concept resources
-            </p>
-            <p>
-              oslc:statusCode = 400 (Bad Request)
-            </p>
-          </li>
-          <li>
+        <div class="conformance">
+          <p>The following error situations MUST be handled by the LDM-Server. In case the error occurs, the subsequent
+          oslc:error SHALL be returned.</p>
+          <ul>
+            <li>
+              No Object resource provided
+              <pre>
+dcterms:identifier ::= “MissingObject” 
+oslc:message       ::= “No Object resource provided”
+oslc:statusCode    ::= 400 (Bad Request)
+              </pre>
+            </li>
+            <li>
+              Too many Object resources requested 
+              <dd>The LDM-Server MAY limit the amount of Object resources to be requested.</dd>
+              <pre>
+dcterms:identifier ::= “LimitReached”
+oslc:message       ::= “Too many Object resources requested. Limit = $1” $1 = Maximum amount of Object concept resources
+oslc:statusCode    ::= 400 (Bad Request)
+              </pre>
+            </li>
+            <li>
             Concept resource requested for Object resource without specified Configuration Context
-            <p>
-              dcterms:identifier = “BadObjectRequest” oslc:message = “Concept resource requested for Object resource
-              without specified Configuration Context”
-            </p>
-            <p>
-              oslc:statusCode = 400 (Bad Request)
-            </p>
-          </li>
-        </ul>
+            <pre>
+dcterms:identifier ::= “BadObjectRequest”
+oslc:message       ::= “Concept resource requested for Object resource without specified Configuration Context”
+oslc:statusCode    ::= 400 (Bad Request)
+            </pre>
+            </li>
+          </ul>
+        </div>
       </section>
+      
       <section id="pagination">
         <h2>Pagination</h2>
 
