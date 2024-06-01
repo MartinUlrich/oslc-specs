@@ -25,11 +25,11 @@ paths:
     post:
       tags:
         - link-index-controller
-      operationId: getResources
+      operationId: discoverLinks
       parameters:
         - name: Configuration-Context
           in: header
-          required: true
+          required: false
           schema:
             type: string
             format: uri
@@ -44,7 +44,7 @@ paths:
           description: OK
           content:
             application/rdf+xml: null
-            text/turtle: null
+            application/x-turtle: null
             application/json+ld: null
         "400":
           description: Bad request
@@ -59,111 +59,61 @@ paths:
               schema:
                 $ref: "#/components/schemas/ServiceProviderCatalog"
 components:
-  schemasGetIncomingLinks:
-    type: object
-    properties:
-      objectResources:
-        type: array
-        items:
-          type: string
-      format: uri
-      predicateFilters:
-        type: array
-        items:
-          type: string
-          format: uri
-      pageSize:
-        type: integer
-        format: int32
-      pageNumber:
-        type: integer
-        format: int32
-      Publisher:
-        type: object
-        properties: null
-      icon:
-        type: string
-        format: uri
-      identifier:
-        type: string
-      label:
-        type: string
-      title:
-        type: string
-      OAuthConfiguration:
-        type: object
-        properties:
-          authorizationURI: null
-          type: string
-          format: uri
-      oauthAccessTokenURI:
-        type: string
-        format: uri
-      oauthRequestTokenURI:
-        type: string
-        format: uri
-      Service:
-        type: object
-        properties: null
-      creationDialogs:
-        type: array
-        items:
-          $ref: "#/components/schemas/Dialog"
-      creationFactories:
-        type: array
-        items:
-          $ref: "#/components/schemas/CreationFactory"
-      queryCapabilities:
-        type: array
-        items:
-          $ref: "#/components/schemas/QueryCapability"
-      selectionDialogs:
-        type: array
-        items:
-          $ref: "#/components/schemas/Dialog"
-      usages:
-        type: array
-        items:
-          type: string
-          format: uri
-      domain:
-        type: string
-        format: uri
-      ServiceProvider: null
+  schemas:
+    GetIncomingLinks:
       type: object
-      properties: null
-      details:
-        type: array
-        items:
+      properties:
+        objectResources:
+          type: array
+          items:
+            type: string
+            format: uri
+        predicateFilters:
+          type: array
+          items:
+            type: string
+            format: uri
+        pageSize:
+          type: integer
+          format: int32
+        pageNumber:
+          type: integer
+          format: int32
+    Publisher:
+      type: object
+      properties:
+        icon:
           type: string
           format: uri
-      services:
-        type: array
-        items:
-          $ref: "#/components/schemas/Service"
-      description:
-        type: string
-      oauthConfiguration:
-        $ref: "#/components/schemas/OAuthConfiguration"
-      publisher:
-        $ref: "#/components/schemas/Publisher"
-      ptitle:
-        type: string
+        identifier:
+          type: string
+        label:
+          type: string
+        title:
+          type: string
+    OAuthConfiguration:
+      type: object
+      properties:
+        authorizationURI:
+          type: string
+          format: uri
+        oauthAccessTokenURI:
+          type: string
+          format: uri
+        oauthRequestTokenURI:
+          type: string
+          format: uri
     ServiceProviderCatalog:
       type: object
-      properties: null
-      referencedServiceProviderCatalogs:
-        type: array
-        items:
+      properties:
+        referencedServiceProviderCatalogs:
+          type: array
+          items:
+            type: string
+            format: uri
+        description:
           type: string
-          format: uri
-      serviceProviders:
-        type: array
-        items:
-          $ref: "#/components/schemas/ServiceProvider"
-      description:
-        type: string
-      oauthConfiguration:
-        $ref: "#/components/schemas/OAuthConfiguration"
-      publisher:
-        $ref: "#/components/schemas/Publisher"
+        oauthConfiguration:
+          $ref: "#/components/schemas/OAuthConfiguration"
+        publisher:
+          $ref: "#/components/schemas/Publisher"
