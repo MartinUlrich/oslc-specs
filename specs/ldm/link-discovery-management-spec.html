@@ -415,7 +415,7 @@ services interface for discovering incoming links."
                   URI are configured. This specification does not prescribe how these multiple LDM servers are managed
                   together.
                 </p>
-                </p class="conformance">
+                <p class="conformance">
                   A LDM Service SHOULD provide discovery of its link contributors via Service Provider Catalog
                   which is pointing via oslc:serviceProviderCatalog to the contributing servers catalogs.
                 </p>
@@ -531,14 +531,17 @@ oslc:statusCode    ::= 400 (Bad Request)
           irrespective of their predicate.
         </p>
         <div class="conformance">
-          <p>The LDM Server response is a set of triples consisting of</p>
+          <p>The LDM Server MUST respond with a set of triples consisting of</p>
           <ul>
             <li>Subject resource: URI<p></p></li>
             <li>Predicate: URI
-              <dd>should be one of the requested predicates, in case specified</dd>
+              <dd>
+                SHALL be one of the requested predicates, in case specified.<br/>
+                In case no IncomingLinkPredicates are specified, the LDM Server SHALL not filter the triples by their predicates.
+              </dd>
             </li>
             <li>Object resource: URI
-              <dd>should be one of requested Object concept resources</dd>
+              <dd>SHALL be one of requested ObjectResources.</dd>
             </li>
           </ul>
         </div>
@@ -601,13 +604,6 @@ oslc:statusCode    ::= 400 (Bad Request)
     <section id="conformance">
       <h2>Conformance</h2>
       <p>Implementations of this specification need to satisfy the following conformance clauses.</p>
-      
-      // Ulrich: commented as redundant to LDM-1
-      // <p class="conformance">
-      //   This specification is based on [[!OSLCCore3]]. OSLC Link Discovery Management servers MUST be compliant with the
-      //   Core specification, MUST follow all the mandatory requirements in the normative sections of each part of this
-      //   specification, and SHOULD follow all the guidelines and recommendations in both these specifications.
-      // </p>
     </section>
 
     <section class="appendix informative" id="acknowledgments">
