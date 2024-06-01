@@ -559,8 +559,8 @@ oslc:statusCode    ::= 400 (Bad Request)
   Content-Type: application/x-www-form-urlencoded
   Configuration-Context: http://elm.example.com/gcm/baseline1URI
         
-  objectResources=http://elm.example.com/rm/req1URI,http://elm.example.com/rm/req2URI &
-  IncomingLinkPredicates=http://elm.example.com/implementsURI,http://elm.example.com/tracksURI
+  objectResources=http://example.com/cm/resource/workitem1URI,http://elm.example.com/am/fct1URI &
+  IncomingLinkPredicates=oslc_cm:tracks,oslc_am:implements
         </pre>
         <p>
           Response (in turtle):
@@ -569,11 +569,11 @@ oslc:statusCode    ::= 400 (Bad Request)
   HTTP/1.1 200 OK
   Content-Type: application/turtle
   
-  &lt;https://example.com/cm/resource/workitem1URI&gt 
-    oslc_cm:implements &lt;http://elm.example.com/rm/req1URI&gt; ; 
-    oslc_cm:tracks &lt;http://elm.example.com/rm/req1URI&gt; .
-  &lt;https://example.com/cm/resource/workitem2URI&gt; 
+  &lt;http://example.com/cm/resource/workitem1URI&gt 
+    oslc_cm:tracks &lt;http://elm.example.com/rm/req1URI&gt; ; 
     oslc_cm:tracks &lt;http://elm.example.com/rm/req2URI&gt; .
+  &lt;http://example.com/am/fct1URI&gt; 
+    oslc_am:implements &lt;http://elm.example.com/rm/req3URI&gt; .
         </pre>
       </section>
 
