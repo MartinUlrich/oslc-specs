@@ -141,9 +141,16 @@ services interface for discovering incoming links."
             status: "Project Specification Draft",
             publisher: "OASIS",
           },
-          OSLCConfigSpec: {
+          OSLCConfig1: {
             title: "OSLC Configuration Management Version 1.0. Part 3: Configuration Specification",
             href: "https://docs.oasis-open-projects.org/oslc-op/config/v1.0/os/config-resources.html",
+            authors: ["Jim Amsden", "Andrii Berezovskyi"],
+            status: "Finalized",
+            publisher: "OASIS",
+          },
+          OSLCTRS3: {
+            title: "OSLC Tracked Resource Set Version 3.0. Part 1: Specification",
+            href: "https://docs.oasis-open-projects.org/oslc-op/trs/v3.0/os/tracked-resource-set.html",
             authors: ["Jim Amsden", "Andrii Berezovskyi"],
             status: "Finalized",
             publisher: "OASIS",
@@ -312,7 +319,7 @@ services interface for discovering incoming links."
       <p>
         The specification does not specify how link discovery services ingest data from the various lifecycle providers,
         in order to effectively support the inquiries. That said, a common way of ingesting and maintaining a link index
-        to support the inquiries uses already standardized OSLC Tracked Resource Sets [OSLC-TRS-v3.0]
+        to support the inquiries uses already standardized OSLC Tracked Resource Sets [[!OSLCTRS3]]
       </p>
       <p>
         This specification is a [[!OSLCCore3]] compliant specification, and as such most of its content are references
@@ -331,23 +338,21 @@ services interface for discovering incoming links."
           <dt>LDM Client</dt>
           <dd>
             An implementation of an application that consumes services provided by LDM servers to discover the scope of
-            available links, and incoming links to a particular set of target resources.
+            available links, and incoming links to a particular set of object resources.
           </dd>
 
           <dt>LDM Server</dt>
           <dd>
             A server implementing the OSLC Link Discovery Management specification. OSLC LDM clients consume services
-            provided by LDM Servers to discover incoming links. The use of the terms Client and Server are intended to
-            distinguish typical consumers and providers of OSLC resources in a distributed environment based on REST. A
-            particular application component could be a client for some OSLC domain services and a server for the same
-            or another domain.
+            provided by LDM Servers to discover incoming links.<br/>
+            A LDM Server is an OSLC Server according to the terminology defined in [[!OSLCCore3]].
           </dd>
           <dt>Concept Resource</dt>
           <dd>
             An artifact (a requirement, test case, source code file, etc.) as an overall entity, independent of any
             specific version of that artifact. In Product Lifecycle Management (PLM) systems, this is often referred to
             as a 'master' item or part, of which there are revisions and versions or iterations. As defined in
-            [OSLC-Config-1.0-Part1]
+            [[!OSLCConfig1]]
           </dd>
 
           <dt>Versioned Resource</dt>
@@ -356,7 +361,7 @@ services interface for discovering incoming links."
             versioned resource is a concept resource that keeps track of different states. A version resource is a
             resource that represents one specific state of a concept resource. Not every past state is necessarily
             kept; a server may elide or discard states that are no longer referenced. As defined in
-            [OSLC-Config-1.0-Part1]
+            [[!OSLCConfig1]]
           </dd>
         </dl>
       </section>
@@ -406,11 +411,15 @@ services interface for discovering incoming links."
             </tr>
             <tr>
               <td>Resource Paging</td>
-              <td class="conformance">
-                LDM Servers SHOULD provide resource paging, as defined in [OSLC-Core-3.0-Part1]. In case resource paging
-                is supported, stable paging is required. Note: as the LDM server implements a post-method as defined
-                below, consider that instead of using oslc:nextPage in oslc:ResponseInfo, the use of oslc:postBody is
-                required.
+              <td>
+                <p class="conformance">
+                  LDM Servers SHOULD provide resource paging, as defined in [[!OSLCCore3]]. In case resource paging
+                  is supported, stable paging is required. 
+                </p>
+                <p>
+                  Note: as the LDM server implements a post-method as defined below, consider that instead of using 
+                  oslc:nextPage in oslc:ResponseInfo, the use of oslc:postBody is required. 
+                </p>
               </td>
             </tr>
             <tr>
@@ -446,7 +455,7 @@ services interface for discovering incoming links."
 
       <section id="configContext">
         <h2>Configuration context</h2>
-        <p>This specification follows the Configuration specification Chapter 4 "Configuration context" given in [[!OSLCConfigSpec]].</p>
+        <p>This specification follows the Configuration specification Chapter 4 "Configuration context" given in [[!OSLC-Config-1.0-Part3]].</p>
       </section>
       
       <section id="versioning">
@@ -477,26 +486,32 @@ services interface for discovering incoming links."
             <li>
               No Object resource provided
               <pre>
-dcterms:identifier ::= “MissingObject” 
-oslc:message       ::= “No Object resource provided”
-oslc:statusCode    ::= 400 (Bad Request)
+&lt;oslc:error&gt;
+  &lt;dcterms:identifier&gt;ldmErr01&lt;/dcterms:identifier&gt;
+  &lt;oslc:message&gt;MissingObject - No ObjectResource provided&lt;oslc:message&gt;
+  &lt;oslc:statusCode&gt;400&lt;/oslc:statusCode&gt;
+&lt;oslc:error&gt;
               </pre>
             </li>
             <li>
               Too many Object resources requested 
               <dd>The LDM-Server MAY limit the amount of Object resources to be requested.</dd>
               <pre>
-dcterms:identifier ::= “LimitReached”
-oslc:message       ::= “Too many Object resources requested. Limit = ” Max_amount_of_Object_concept_resources
-oslc:statusCode    ::= 400 (Bad Request)
+&lt;oslc:error&gt;
+  &lt;dcterms:identifier&gt;ldmErr02&lt;/dcterms:identifier&gt;
+  &lt;oslc:message&gt;LimitReached - Too many Object resources requested. Limit = <dfn>Max_amount_of_Object_concept_resources</dfn>&lt;oslc:message&gt;
+  &lt;oslc:statusCode&gt;400&lt;/oslc:statusCode&gt;
+&lt;oslc:error&gt;                
               </pre>
             </li>
             <li>
             Concept resource requested for Object resource without specified Configuration Context
             <pre>
-dcterms:identifier ::= “BadObjectRequest”
-oslc:message       ::= “Concept resource requested for Object resource without specified Configuration Context”
-oslc:statusCode    ::= 400 (Bad Request)
+&lt;oslc:error&gt;
+  &lt;dcterms:identifier&gt;ldmErr03&lt;/dcterms:identifier&gt;
+  &lt;oslc:message&gt;BadObjectRequest - Concept resource requested for Object resource without specified Configuration Context&lt;oslc:message&gt;
+  &lt;oslc:statusCode&gt;400&lt;/oslc:statusCode&gt;
+&lt;oslc:error&gt;
             </pre>
             </li>
           </ul>
@@ -518,7 +533,7 @@ oslc:statusCode    ::= 400 (Bad Request)
       <section>
         <h2>Discover links inquiry</h2>
         <p>
-          LDM clients inquire for incoming links related to a set of target object resources, typically owned and/or
+          LDM clients inquire for incoming links related to a set of object resources, typically owned and/or
           visualized by the client. The discover links inquiry is exposed under the discover-links path as described in
           the open-API section below. For the incoming links inquiry, the client provides:
         </p>
@@ -539,18 +554,14 @@ oslc:statusCode    ::= 400 (Bad Request)
           (Rationale: to support bidirectionality for non-configuration aware links)
         </p>
         <p class="conformance">
-          In case no predicates are provided, the server MUST provide all incoming links
-          irrespective of their predicate.
+          In case no IncomingLinkPredicates are provided, the server SHALL not filter the triples by their predicates.
         </p>
         <div class="conformance">
-          <p>The LDM Server MUST respond with a set of triples consisting of</p>
+          <p>Based on the known triples, the LDM Server MUST respond with a set of triples consisting of</p>
           <ul>
             <li>Subject resource: URI<p></p></li>
             <li>Predicate: URI
-              <dd>
-                SHALL be one of the requested predicates, in case specified.<br/>
-                In case no IncomingLinkPredicates are specified, the LDM Server SHALL not filter the triples by their predicates.
-              </dd>
+              <dd>SHALL be one of the requested IncomingLinkPredicates, in case specified.</dd>
             </li>
             <li>Object resource: URI
               <dd>SHALL be one of requested ObjectResources.</dd>
@@ -559,11 +570,14 @@ oslc:statusCode    ::= 400 (Bad Request)
         </div>
         <p>
           Based on the LDM service response, the LDM client would typically show the incoming link with an inverse
-          predicate label (e.g., “validated by” vs. “validates”). 
+          predicate label (e.g., “validated by” vs. “validates”).
+        </p>
+        <p>
+          The result of the inquiry may not necessarily be ordered.
         </p>
         <p class="conformance">
           The inquiry MUST be implemented as an HTTP post request,
-          where the target concept resources and the predicates are provided with the request body.
+          where the object resources and the incoming link predicates are provided with the request body.
         </p>
         <p>
           The following LDM example illustrates an OSLC RM client that inquires incoming links to requirements req1 and
@@ -574,7 +588,7 @@ oslc:statusCode    ::= 400 (Bad Request)
   Content-Type: application/x-www-form-urlencoded
   Configuration-Context: http://elm.example.com/gcm/baseline1URI
         
-  objectResources=http://example.com/cm/resource/workitem1URI,http://elm.example.com/am/fct1URI &
+  objectResources=http://elm.example.com/rm/req1URI,http://elm.example.com/rm/req2URI &
   IncomingLinkPredicates=oslc_cm:tracks,oslc_am:implements
         </pre>
         <p>
@@ -588,7 +602,7 @@ oslc:statusCode    ::= 400 (Bad Request)
     oslc_cm:tracks &lt;http://elm.example.com/rm/req1URI&gt; ; 
     oslc_cm:tracks &lt;http://elm.example.com/rm/req2URI&gt; .
   &lt;http://example.com/am/fct1URI&gt; 
-    oslc_am:implements &lt;http://elm.example.com/rm/req3URI&gt; .
+    oslc_am:implements &lt;http://elm.example.com/rm/req1URI&gt; .
         </pre>
       </section>
 
