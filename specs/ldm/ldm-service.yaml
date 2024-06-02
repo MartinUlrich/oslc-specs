@@ -46,6 +46,7 @@ paths:
             application/rdf+xml: null
             text/turtle: null
             application/json+ld: null
+            application/n-triples: null
         "400":
           description: Bad request
   /rootservices:
